@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import { useAuth } from "../context/AuthContext.jsx";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Login() {
     const [email, setEmail] = useState("");
@@ -9,6 +9,7 @@ export default function Login() {
     const [showPassword, setShowPassword] = useState(false);
     const [errors, setErrors] = useState({});
     const { login } = useAuth();
+    const navigate = useNavigate();
 
     async function handleSubmit(e) {
         e.preventDefault();
@@ -21,21 +22,20 @@ export default function Login() {
         }
 
         try {
-            console.log("Logging in with:", email, password);
-            const response = await login({ email, password });
-            console.log("Logged in!", response.message);
+            await login({ email, password });
+            navigate("/");
         } catch (err) {
-            setErrors({ api: "Server Error" });
+            setErrors({ api: err.message || "Invalid credentials" });
         }
     }
 
     function validateLogin({ email, password }) {
         const errors = {};
 
-        if (!email.trim()) errors.email = "Email is obrigatory";
+        if (!email.trim()) errors.email = "Email is required";
         else if (!email.includes("@")) errors.email = "Invalid email";
 
-        if (!password) errors.password = "Obrigatory password";
+        if (!password) errors.password = "Password is required";
         else if (password.length < 6)
             errors.password = "Password must have at least 6 characters";
 
@@ -53,10 +53,9 @@ export default function Login() {
                 >
                     <h2 className="text-2xl font-semibold mb-6 text-center">Login</h2>
 
-                    {/* Error messages */}
+                    {errors.api && <p className="text-red-600 text-sm">{errors.api}</p>}
                     {errors.email && <p className="text-red-600 text-sm">{errors.email}</p>}
                     {errors.password && <p className="text-red-600 text-sm">{errors.password}</p>}
-                    {errors.api && <p className="text-red-600 text-sm">{errors.api}</p>}
 
                     <input
                         type="email"

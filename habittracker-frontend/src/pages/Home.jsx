@@ -1,13 +1,16 @@
 import Header from "../components/Header";
+import { useAuth } from "../context/AuthContext";
 
 function Home() {
+    const { user, isAuthenticated } = useAuth();
+
     return (
         <>
             <Header />
 
             <div className="px-8 py-16">
                 <h2 className="text-3xl font-bold text-gray-800">
-                    Welcome!
+                    Welcome {user?.name ?? "Guest"}!
                 </h2>
 
                 <p className="mt-4 text-gray-600 max-w-xl">

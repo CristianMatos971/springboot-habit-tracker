@@ -1,20 +1,27 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
-import { register as registerService } from "../services/authService";
+import { useAuth } from "../context/AuthContext.jsx";
 
 export default function Register() {
+    const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [errors, setErrors] = useState({});
+    const { register } = useAuth();
+    const navigate = useNavigate();
 
     async function handleSubmit(e) {
         e.preventDefault();
-        let formData = { email, password, confirmPassword };
 
-        const validationErrors = validateRegister(formData);
+        const validationErrors = validateRegister({
+            name,
+            email,
+            password,
+            confirmPassword,
+        });
 
         if (Object.keys(validationErrors).length > 0) {
             setErrors(validationErrors);
@@ -22,25 +29,22 @@ export default function Register() {
         }
 
         try {
-            const response = await registerService({
-                email,
-                password
-            });
-
-            console.log("Registered!", response.message);
-
+            await register({ name, email, password });
+            navigate("/");
         } catch (err) {
-            setErrors({ api: "Server Error" });
+            setErrors({ api: err.message || "Email already exists" });
         }
-    };
+    }
 
-    function validateRegister({ email, password, confirmPassword }) {
+    function validateRegister({ name, email, password, confirmPassword }) {
         const errors = {};
 
-        if (!email.trim()) errors.email = "Email is obrigatory";
+        if (!name.trim()) errors.name = "Name is required";
+
+        if (!email.trim()) errors.email = "Email is required";
         else if (!email.includes("@")) errors.email = "Invalid email";
 
-        if (!password) errors.password = "Obrigatory password";
+        if (!password) errors.password = "Password is required";
         else if (password.length < 6)
             errors.password = "Password must have at least 6 characters";
 
@@ -61,10 +65,21 @@ export default function Register() {
                 >
                     <h2 className="text-2xl font-semibold mb-6 text-center">Register</h2>
 
+                    {errors.api && <p className="text-red-600 text-sm">{errors.api}</p>}
+                    {errors.name && <p className="text-red-600 text-sm">{errors.name}</p>}
                     {errors.email && <p className="text-red-600 text-sm">{errors.email}</p>}
                     {errors.password && <p className="text-red-600 text-sm">{errors.password}</p>}
-                    {errors.confirmPassword && <p className="text-red-600 text-sm">{errors.confirmPassword}</p>}
-                    {errors.api && <p className="text-red-600 text-sm">{errors.api}</p>}
+                    {errors.confirmPassword && (
+                        <p className="text-red-600 text-sm">{errors.confirmPassword}</p>
+                    )}
+
+                    <input
+                        type="text"
+                        placeholder="Name"
+                        className="border w-full p-2 mb-4 rounded"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                    />
 
                     <input
                         type="email"
