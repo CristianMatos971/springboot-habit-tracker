@@ -30,7 +30,7 @@ export default function Register() {
 
         try {
             await register({ name, email, password });
-            navigate("/");
+            navigate("/Dashboard");
         } catch (err) {
             setErrors({ api: err.message || "Email already exists" });
         }

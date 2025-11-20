@@ -5,8 +5,15 @@ import { register as registerService } from "../services/authService";
 export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-    const [user, setUser] = useState(null);
     const [token, setToken] = useState(localStorage.getItem("token") || null);
+    const [user, setUser] = useState(() => {
+        try {
+            const raw = localStorage.getItem("user");
+            return raw ? JSON.parse(raw) : null;
+        } catch (e) {
+            return null;
+        }
+    });
 
     useEffect(() => {
         if (!token) return;
@@ -20,10 +27,14 @@ export function AuthProvider({ children }) {
         localStorage.setItem("token", res.token);
 
         setUser(res.user);
+        try {
+            localStorage.setItem("user", JSON.stringify(res.user));
+        } catch (e) {
+            // ignore localStorage failures
+        }
 
         return res;
     }
-
 
     async function login(credentials) {
         const res = await loginService(credentials);
@@ -32,6 +43,11 @@ export function AuthProvider({ children }) {
         localStorage.setItem("token", res.token);
 
         setUser(res.user);
+        try {
+            localStorage.setItem("user", JSON.stringify(res.user));
+        } catch (e) {
+            // ignore localStorage failures
+        }
 
         return res;
     }
@@ -40,6 +56,7 @@ export function AuthProvider({ children }) {
         setToken(null);
         setUser(null);
         localStorage.removeItem("token");
+        localStorage.removeItem("user");
     }
 
     const value = {
@@ -56,4 +73,4 @@ export function AuthProvider({ children }) {
 
 export function useAuth() {
     return useContext(AuthContext);
-}   
+}

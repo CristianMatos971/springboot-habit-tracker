@@ -35,7 +35,7 @@ function Header() {
                 {isAuthenticated && (
                     <>
                         <span className="text-gray-700">
-                            Hello, {user?.name || "User"}
+                            Hello, {user ? user.name : "User"}
                         </span>
 
                         <button

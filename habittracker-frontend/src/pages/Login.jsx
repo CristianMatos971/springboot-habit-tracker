@@ -23,7 +23,7 @@ export default function Login() {
 
         try {
             await login({ email, password });
-            navigate("/");
+            navigate("/Dashboard");
         } catch (err) {
             setErrors({ api: err.message || "Invalid credentials" });
         }
