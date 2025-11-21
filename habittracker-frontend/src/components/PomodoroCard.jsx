@@ -1,24 +1,73 @@
 import { useState, useEffect, useRef } from "react";
 import alarmFile from "../assets/sounds/alarm.mp3";
+import PomodoroOptionsCard from "./PomodoroOptionsCard";
 
-function PomodoroCard() {
-    const FOCUS_TIME = 25 * 60;
-    const REST_TIME = 5 * 60;
+export default function PomodoroCard() {
+    //CONFIGURAÇÕES PADRÃO 
+    const DEFAULT_FOCUS = 25;
+    const DEFAULT_REST = 5;
+    const DEFAULT_LONG_REST = 15;
 
-    const [mode, setMode] = useState("focus");
-    const [time, setTime] = useState(FOCUS_TIME);
+    // ESTADOS
+    const [mode, setMode] = useState("focus"); // 'focus', 'rest', 'longRest'
     const [isRunning, setIsRunning] = useState(false);
     const [autoSkip, setAutoSkip] = useState(false);
     const [isAlarmPlaying, setIsAlarmPlaying] = useState(false);
+    const [showOptions, setShowOptions] = useState(false);
+    const [currentCycle, setCurrentCycle] = useState(0);
 
-    const alarmRef = useRef(null);
-    const alarmInterval = useRef(null);
+    // Configurações
+    const [focusTime, setFocusTime] = useState(() => getSavedSettings("focusTime", DEFAULT_FOCUS));
+    const [restTime, setRestTime] = useState(() => getSavedSettings("restTime", DEFAULT_REST));
+    const [longRestTime, setLongRestTime] = useState(() => getSavedSettings("longRestTime", DEFAULT_LONG_REST));
+    const [cycles, setCycles] = useState(() => getSavedSettings("cycles", 4));
+    const [alarmVolume, setAlarmVolume] = useState(() => getSavedSettings("alarmVolume", 0.5));
+
+    // O tempo inicial
+    const [time, setTime] = useState(() => {
+        const savedFocus = getSavedSettings("focusTime", DEFAULT_FOCUS);
+        return savedFocus * 60;
+    });
+
+    // Refs para Áudio e Intervalos
+    const alarmRef = useRef(new Audio(alarmFile));
+    const autoSkipTimeoutRef = useRef(null);
+
+    const toggleOptions = () => setShowOptions((prev) => !prev);
 
     useEffect(() => {
-        alarmRef.current = new Audio(alarmFile);
-        alarmRef.current.loop = false;
+        alarmRef.current.loop = true;
     }, []);
 
+    useEffect(() => {
+        alarmRef.current.volume = alarmVolume;
+    }, [alarmVolume]);
+
+    //Se as Configs mudarem e o timer estiver pausado, useEffect para atualizá-las
+    useEffect(() => {
+        if (!isRunning) {
+            if (mode === "focus") setTime(focusTime * 60);
+            if (mode === "rest") setTime(restTime * 60);
+            if (mode === "longRest") setTime(longRestTime * 60);
+        }
+
+    }, [focusTime, restTime, longRestTime, mode]);
+
+    //Salvar Configurações no LocalStorage
+    useEffect(() => {
+        const configs_pomodoro = {
+            focusTime,
+            restTime,
+            longRestTime,
+            cycles,
+            alarmVolume
+        };
+
+        localStorage.setItem("configs_pomodoro", JSON.stringify(configs_pomodoro));
+
+    }, [focusTime, restTime, longRestTime, cycles, alarmVolume]);
+
+    //Lógica do Timer
     useEffect(() => {
         let interval = null;
 
@@ -26,126 +75,171 @@ function PomodoroCard() {
             interval = setInterval(() => {
                 setTime((prev) => prev - 1);
             }, 1000);
-        }
-
-        if (time === 0 && isRunning) {
+        } else if (time === 0 && isRunning) {
             setIsRunning(false);
+            playAlarm();
         }
 
         return () => clearInterval(interval);
     }, [isRunning, time]);
 
-    useEffect(() => {
-        if (time === 0 && !isRunning) {
-            setIsAlarmPlaying(true);
 
-            alarmRef.current.currentTime = 0;
-            alarmRef.current.play();
+    const playAlarm = () => {
+        setIsAlarmPlaying(true);
+        alarmRef.current.currentTime = 0;
 
-            alarmInterval.current = setInterval(() => {
-                alarmRef.current.currentTime = 0;
-                alarmRef.current.play();
-            }, 2000);
+        alarmRef.current.play().catch(e => console.error("Erro ao tocar:", e));
 
-            if (autoSkip) {
-                const next = mode === "focus" ? "rest" : "focus";
-                const nextTime = next === "focus" ? FOCUS_TIME : REST_TIME;
-
-                setTimeout(() => {
-                    clearInterval(alarmInterval.current);
-                    alarmRef.current.pause();
-                    setMode(next);
-                    setTime(nextTime);
-                    setIsRunning(false);
-                }, 3000);
-            }
+        if (autoSkip) {
+            autoSkipTimeoutRef.current = setTimeout(() => {
+                handleSkip();
+            }, 3000);
         }
-
-        return () => {
-            clearInterval(alarmInterval.current);
-        };
-    }, [time, isRunning, autoSkip, mode]);
+    };
 
     const stopAlarm = () => {
-        clearInterval(alarmInterval.current);
         alarmRef.current.pause();
         alarmRef.current.currentTime = 0;
         setIsAlarmPlaying(false);
+
+        // Limpa o timeout do autoskip se o usuário clicar antes
+        if (autoSkipTimeoutRef.current) {
+            clearTimeout(autoSkipTimeoutRef.current);
+            autoSkipTimeoutRef.current = null;
+        }
     };
 
     const toggleTimer = () => {
         stopAlarm();
-        setIsRunning(!isRunning);
+        setIsRunning((prev) => !prev);
     };
 
     const handleReset = () => {
         stopAlarm();
         setIsRunning(false);
-        setTime(mode === "focus" ? FOCUS_TIME : REST_TIME);
+
+        if (mode === "focus") setTime(focusTime * 60);
+        else if (mode === "rest") setTime(restTime * 60);
+        else setTime(longRestTime * 60);
     };
 
     const handleSkip = () => {
         stopAlarm();
         setIsRunning(false);
 
-        const next = mode === "focus" ? "rest" : "focus";
-        setMode(next);
+        let nextMode = mode;
 
-        const nextTime = next === "focus" ? FOCUS_TIME : REST_TIME;
-        setTime(nextTime);
+        if (mode === "focus") {
+            const newCycle = currentCycle + 1;
+            setCurrentCycle(newCycle);
+
+            if (newCycle < cycles) {
+                nextMode = "rest";
+            } else {
+                nextMode = "longRest";
+                setCurrentCycle(0);
+            }
+
+        } else {
+            nextMode = "focus";
+        }
+
+        setMode(nextMode);
+        // O useEffect das configs vai cuidar de atualizar o setTime baseado no nextMode
     };
+
 
     const minutes = String(Math.floor(time / 60)).padStart(2, "0");
     const seconds = String(time % 60).padStart(2, "0");
 
     return (
-        <div className="bg-white rounded-xl shadow-xl p-8 flex flex-col items-center gap-6 border-2 border-indigo-600">
+        <>
+            <div className="bg-white rounded-xl shadow-xl p-8 flex flex-col items-center gap-6 border-2 border-indigo-600">
 
-            <div className="flex flex-col items-center gap-2">
-                <h2 className={`text-xl font-bold uppercase tracking-widest ${mode === "focus" ? "text-indigo-600" : "text-green-600"}`}>
-                    {mode === "focus" ? "Focus Time" : "Rest Time"}
-                </h2>
+                <div className="flex flex-col items-center gap-2">
+                    <h2 className={`text-xl font-bold uppercase tracking-widest ${mode === "focus" ? "text-indigo-600" : "text-green-600"}`}>
+                        {mode === "focus" ? "Focus Time" : "Rest Time"}
+                    </h2>
 
-                <div className="text-x2 font-bold uppercase tracking-widest text-indigo-800">
-                    <input type="checkbox" onChange={(e) => setAutoSkip(e.target.checked)} /> Auto Skip Alarms?
+                    <label className="text-indigo-800 font-medium">
+                        <input
+                            type="checkbox"
+                            checked={autoSkip}
+                            onChange={(e) => setAutoSkip(e.target.checked)}
+                        /> Auto Skip Alarms
+                    </label>
+
+                    <div className="text-7xl font-bold text-gray-800 tracking-tight">
+                        {minutes}:{seconds}
+                    </div>
                 </div>
 
-                <div className="text-7xl font-bold text-gray-800 tracking-tighter">
-                    {minutes}:{seconds}
+                <div className="flex items-center gap-3 w-full justify-center">
+                    <button
+                        onClick={toggleTimer}
+                        className={`px-6 py-3 rounded-lg font-bold text-white transition-all shadow-md w-28 hover:scale-105
+                        ${isRunning ? "bg-amber-500 hover:bg-amber-600" : "bg-indigo-600 hover:bg-indigo-700"}`}
+                    >
+                        {isRunning ? "Pause" : "Start"}
+                    </button>
+
+                    <button
+                        onClick={handleSkip}
+                        className={`px-4 py-3 rounded-lg font-semibold transition-colors
+                        ${isAlarmPlaying ? "bg-red-600 text-white border-red-700 hover:bg-red-700"
+                                : "text-indigo-700 bg-indigo-50 border-2 border-indigo-100 hover:bg-indigo-100"}`}
+                    >
+                        Skip
+                    </button>
+
+                    <button
+                        onClick={handleReset}
+                        className="px-4 py-3 rounded-lg font-semibold text-gray-500 bg-gray-50 border-2 border-gray-200 hover:bg-gray-100"
+                    >
+                        Reset
+                    </button>
                 </div>
-            </div>
 
-            <div className="flex items-center gap-3 w-full justify-center">
-                <button
-                    onClick={toggleTimer}
-                    className={`px-6 py-3 rounded-lg font-bold text-white transition-all shadow-md w-28 hover:scale-105 ${isRunning ? "bg-amber-500 hover:bg-amber-600" : "bg-indigo-600 hover:bg-indigo-700"}`}
-                >
-                    {isRunning ? "Pause" : "Start"}
-                </button>
+                <div className="w-full border-t border-gray-100"></div>
 
                 <button
-                    onClick={handleSkip}
-                    className={`px-4 py-3 rounded-lg font-semibold transition-colors
-                    ${isAlarmPlaying ? "bg-red-600 text-white border-red-700 hover:bg-red-700" : "text-indigo-700 bg-indigo-50 border-2 border-indigo-100 hover:bg-indigo-100"}`}
+                    className="w-full py-3 rounded-lg bg-slate-800 text-gray-100 font-medium hover:bg-slate-900 transition-all shadow-sm flex items-center justify-center gap-2"
+                    onClick={toggleOptions}
                 >
-                    Skip
-                </button>
-
-                <button
-                    onClick={handleReset}
-                    className="px-4 py-3 rounded-lg font-semibold text-gray-500 bg-gray-50 border-2 border-gray-200 hover:bg-gray-100 transition-colors"
-                >
-                    Reset
+                    <span>⚙️</span> Configure Options
                 </button>
             </div>
 
-            <div className="w-full border-t border-gray-100"></div>
-
-            <button className="w-full py-3 rounded-lg bg-slate-800 text-gray-100 font-medium hover:bg-slate-900 transition-all shadow-sm flex items-center justify-center gap-2">
-                <span>⚙️</span> Configure Options
-            </button>
-        </div>
+            {showOptions && (
+                <PomodoroOptionsCard
+                    autoSkip={autoSkip}
+                    setAutoSkip={setAutoSkip}
+                    focusTime={focusTime}
+                    setFocusTime={setFocusTime}
+                    restTime={restTime}
+                    setRestTime={setRestTime}
+                    longRestTime={longRestTime}
+                    setLongRestTime={setLongRestTime}
+                    cycles={cycles}
+                    setCycles={setCycles}
+                    alarmVolume={alarmVolume}
+                    setAlarmVolume={setAlarmVolume}
+                />
+            )}
+        </>
     );
 }
 
-export default PomodoroCard;
+function getSavedSettings(key, defaultValue) {
+    const saved = localStorage.getItem("configs_pomodoro");
+    if (!saved) return defaultValue;
+
+    try {
+        const parsed = JSON.parse(saved);
+        return parsed[key] !== undefined ? parsed[key] : defaultValue;
+    } catch (e) {
+        return defaultValue;
+    }
+}
+
+
