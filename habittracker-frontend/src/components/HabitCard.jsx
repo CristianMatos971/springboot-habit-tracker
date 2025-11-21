@@ -1,16 +1,16 @@
 function HabitCard() {
     const dummyHabits = [
-        { id: 1, name: "Ler 20 minutos", done: false },
-        { id: 2, name: "Meditar", done: true },
-        { id: 3, name: "Academia", done: false },
+        { id: 1, name: "Read for 20 minutes", done: false },
+        { id: 2, name: "Meditate", done: true },
+        { id: 3, name: "GYM", done: false },
     ];
 
     return (
         <div className="min-h-[700px] bg-white rounded-xl shadow-md p-6 border-2 border-indigo-600">
-            <h2 className="text-xl font-bold text-gray-700 mb-4">Hábitos</h2>
+            <h2 className="text-xl font-bold text-gray-700 mb-4">Habits</h2>
 
             <button className="mb-4 px-3 py-2 bg-blue-500 text-white text-sm rounded-lg">
-                Novo Hábito
+                New Habit
             </button>
 
             <ul className="space-y-3">

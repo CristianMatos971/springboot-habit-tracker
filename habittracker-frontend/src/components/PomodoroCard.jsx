@@ -13,7 +13,6 @@ export default function PomodoroCard() {
     const [isRunning, setIsRunning] = useState(false);
     const [autoSkip, setAutoSkip] = useState(false);
     const [isAlarmPlaying, setIsAlarmPlaying] = useState(false);
-    const [showOptions, setShowOptions] = useState(false);
     const [currentCycle, setCurrentCycle] = useState(0);
 
     // Configurações
@@ -32,8 +31,6 @@ export default function PomodoroCard() {
     // Refs para Áudio e Intervalos
     const alarmRef = useRef(new Audio(alarmFile));
     const autoSkipTimeoutRef = useRef(null);
-
-    const toggleOptions = () => setShowOptions((prev) => !prev);
 
     useEffect(() => {
         alarmRef.current.loop = true;
@@ -154,7 +151,7 @@ export default function PomodoroCard() {
 
     return (
         <>
-            <div className="bg-white rounded-xl shadow-xl p-8 flex flex-col items-center gap-6 border-2 border-indigo-600">
+            <div className="min-h-[350px] bg-white rounded-xl shadow-xl p-8 flex flex-col items-center gap-6 border-2 border-indigo-600 ">
 
                 <div className="flex flex-col items-center gap-2">
                     <h2 className={`text-xl font-bold uppercase tracking-widest ${mode === "focus" ? "text-indigo-600" : "text-green-600"}`}>
@@ -169,7 +166,7 @@ export default function PomodoroCard() {
                         /> Auto Skip Alarms
                     </label>
 
-                    <div className="text-7xl font-bold text-gray-800 tracking-tight">
+                    <div className="p-8 text-7xl font-bold text-gray-800 tracking-tight">
                         {minutes}:{seconds}
                     </div>
                 </div>
@@ -202,15 +199,9 @@ export default function PomodoroCard() {
 
                 <div className="w-full border-t border-gray-100"></div>
 
-                <button
-                    className="w-full py-3 rounded-lg bg-slate-800 text-gray-100 font-medium hover:bg-slate-900 transition-all shadow-sm flex items-center justify-center gap-2"
-                    onClick={toggleOptions}
-                >
-                    <span>⚙️</span> Configure Options
-                </button>
             </div>
 
-            {showOptions && (
+            {(
                 <PomodoroOptionsCard
                     autoSkip={autoSkip}
                     setAutoSkip={setAutoSkip}

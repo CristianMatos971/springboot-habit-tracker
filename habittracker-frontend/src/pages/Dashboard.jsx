@@ -3,6 +3,7 @@ import Header from "../components/Header";
 import PomodoroCard from "../components/PomodoroCard";
 import HabitCard from "../components/HabitCard";
 import TasksCard from "../components/TasksCard";
+import AuthGuard from "../components/AuthGuard";
 
 function Dashboard() {
     return (
@@ -16,11 +17,15 @@ function Dashboard() {
                 </div>
 
                 <div className="md:col-span-2">
-                    <HabitCard />
+                    <AuthGuard>
+                        <HabitCard />
+                    </AuthGuard>
                 </div>
 
                 <div className="md:col-span-1">
-                    <TasksCard />
+                    <AuthGuard>
+                        <TasksCard />
+                    </AuthGuard>
                 </div>
 
             </div>

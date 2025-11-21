@@ -80,8 +80,15 @@ public class JwtService {
     public boolean isTokenValid(String token, UserDetails userDetails) {
         try {
             String username = extractUsername(token);
+
+            System.out.println("DEBUG JWT: Token Email: " + username);
+            System.out.println("DEBUG JWT: UserDetails Username: " + userDetails.getUsername());
+
             return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
         } catch (Exception e) {
+
+            System.out.println("DEBUG JWT ERRO: " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }
