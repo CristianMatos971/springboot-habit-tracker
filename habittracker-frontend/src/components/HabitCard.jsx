@@ -6,7 +6,7 @@ function HabitCard() {
     ];
 
     return (
-        <div className="min-h-[700px] bg-white rounded-xl shadow-md p-6 border-2 border-indigo-600">
+        <div className="min-h-[750px] bg-white rounded-xl shadow-md p-6 border-2 border-indigo-600">
             <h2 className="text-xl font-bold text-gray-700 mb-4">Habits</h2>
 
             <button className="mb-4 px-3 py-2 bg-blue-500 text-white text-sm rounded-lg">

@@ -11,7 +11,7 @@ export default function PomodoroOptionsCard({
     setAlarmVolume
 }) {
     return (
-        <div className="bg-white rounded-xl shadow-md p-6 border-4 border-indigo-400 mt-4 w-full">
+        <div className="min-h-[360px] bg-white rounded-xl shadow-md p-6 border-4 border-indigo-400 mt-4 w-full">
             <h3 className="text-lg font-bold mb-4">Pomodoro Options</h3>
 
             <label className="block mb-3 text-gray-700 font-medium">
