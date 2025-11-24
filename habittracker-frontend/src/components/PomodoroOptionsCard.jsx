@@ -11,10 +11,10 @@ export default function PomodoroOptionsCard({
     setAlarmVolume
 }) {
     return (
-        <div className="min-h-[360px] bg-white rounded-xl shadow-md p-6 border-4 border-indigo-400 mt-4 w-full">
-            <h3 className="text-lg font-bold mb-4">Pomodoro Options</h3>
+        <div className="h-[360px] bg-white rounded-xl shadow-md p-6 border-4 border-indigo-400 mt-4 w-full">
+            <h3 className="text-lg font-bold mb-2">Pomodoro Options</h3>
 
-            <label className="block mb-3 text-gray-700 font-medium">
+            <label className="block mb-1 text-gray-700 font-medium">
                 Focus Time (min):
                 <input
                     min="0"
@@ -25,7 +25,7 @@ export default function PomodoroOptionsCard({
                 />
             </label>
 
-            <label className="block mb-3 text-gray-700 font-medium">
+            <label className="block mb-2 text-gray-700 font-medium">
                 Short Break (min):
                 <input
                     min="0"
@@ -36,7 +36,7 @@ export default function PomodoroOptionsCard({
                 />
             </label>
 
-            <label className="block mb-3 text-gray-700 font-medium">
+            <label className="block mb-2 text-gray-700 font-medium">
                 Long Break (min):
                 <input
                     min="0"
@@ -47,7 +47,7 @@ export default function PomodoroOptionsCard({
                 />
             </label>
 
-            <label className="block mb-3 text-gray-700 font-medium">
+            <label className="block mb-1 text-gray-700 font-medium">
                 Cycles until long break:
                 <input
                     min="0"

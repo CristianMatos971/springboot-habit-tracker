@@ -9,7 +9,7 @@ public record HabitResponseDTO(
         String name,
         String unit,
         String colorCode,
-        Integer goal,
+        Double goal,
         LocalDateTime createdAt) {
 
     // Construtor auxiliar para converter Entity para DTO

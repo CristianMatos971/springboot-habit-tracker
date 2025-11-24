@@ -23,7 +23,7 @@ public class HabitLog {
     private LocalDate date;
 
     @Column(nullable = false)
-    private Integer value;
+    private Double value;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "habit_id", nullable = false)

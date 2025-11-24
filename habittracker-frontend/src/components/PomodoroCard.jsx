@@ -145,7 +145,6 @@ export default function PomodoroCard() {
         // O useEffect das configs vai cuidar de atualizar o setTime baseado no nextMode
     };
 
-
     const minutes = String(Math.floor(time / 60)).padStart(2, "0");
     const seconds = String(time % 60).padStart(2, "0");
 

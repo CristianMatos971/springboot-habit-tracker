@@ -31,7 +31,7 @@ public class Habit {
     private String colorCode;
 
     // Meta diária opcional (ex: meta é 2000ml, mas hoje fiz 1500ml)
-    private Integer goal;
+    private Double goal;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
