@@ -119,12 +119,69 @@ public class HabitService {
                                                 HabitLog::getDate,
                                                 HabitLog::getValue));
 
+                double sum = logs.stream()
+                                .mapToDouble(HabitLog::getValue)
+                                .sum();
+
+                int totalEntries = logs.size();
+
+                // Média só dos dias preenchidos
+                double average = totalEntries > 0 ? sum / totalEntries : 0.0;
+
+                // Cálculo dos streaks:
+                // Ordena crescente
+                List<LocalDate> sortedDates = historyMap.keySet().stream()
+                                .sorted()
+                                .toList();
+
+                // ---- MAX STREAK ----
+                int maxStreak = 0;
+                int tempStreak = 0;
+                LocalDate prev = null;
+
+                for (LocalDate date : sortedDates) {
+
+                        Double value = historyMap.get(date);
+                        boolean completed = value != null && value > 0;
+
+                        if (completed) {
+
+                                if (prev != null && prev.plusDays(1).equals(date)) {
+                                        tempStreak++;
+                                } else {
+                                        tempStreak = 1;
+                                }
+
+                                maxStreak = Math.max(maxStreak, tempStreak);
+
+                        } else {
+                                tempStreak = 0;
+                        }
+
+                        prev = date;
+                }
+
+                // ---- CURRENT STREAK ----
+                int currentStreak = 0;
+                LocalDate today = LocalDate.now();
+                LocalDate pointer = today;
+
+                while (historyMap.containsKey(pointer)
+                                && historyMap.get(pointer) > 0) {
+
+                        currentStreak++;
+                        pointer = pointer.minusDays(1);
+                }
+
                 return new HabitDetailsDTO(
                                 habit.getId(),
                                 habit.getName(),
                                 habit.getUnit(),
                                 habit.getColorCode(),
                                 habit.getGoal(),
+                                average,
+                                currentStreak,
+                                maxStreak,
                                 historyMap);
         }
 

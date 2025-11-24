@@ -8,12 +8,15 @@ export default function HabitItem({ habit, onEdit, onDelete }) {
     const [selectedDay, setSelectedDay] = useState(null);
     const [dayValue, setDayValue] = useState("");
     const [isLoadingLogs, setIsLoadingLogs] = useState(false);
+    const [data, setData] = useState({});
 
+    // Carrega logs do backend
     const loadLogs = useCallback(async () => {
         try {
             setIsLoadingLogs(true);
-            const data = await fetchHabitLogs(habit.id);
-            setHistory(data.history || {});
+            const incomingData = await fetchHabitLogs(habit.id);
+            setData(incomingData);           // salva métricas + info
+            setHistory(incomingData.history || {}); // salva mapa data -> valor
         } catch (error) {
             console.error("Falha ao carregar logs do heatmap", error);
         } finally {
@@ -21,31 +24,35 @@ export default function HabitItem({ habit, onEdit, onDelete }) {
         }
     }, [habit.id, fetchHabitLogs]);
 
+    // Executado ao montar o componente ou quando o hábito muda
     useEffect(() => {
         loadLogs();
     }, [loadLogs]);
 
-
+    // Lista local com pares {date, value}
     const localLogs = Object.entries(history).map(([date, value]) => ({
         date,
         value
     }));
 
+    // Gera todos os 365 dias do ano
     const yearDays = Array.from({ length: 365 }, (_, i) => {
         const date = new Date(2025, 0, 1);
         date.setDate(date.getDate() + i);
         return date;
     });
 
+    // Ao clicar no quadrado do heatmap
     const handleDayClick = (date) => {
         const formattedDate = formatDate(date);
 
         const existingLog = localLogs.find(l => l.date === formattedDate);
 
-        setSelectedDay(date);
-        setDayValue(existingLog ? existingLog.value : "");
+        setSelectedDay(date);           // abre modal
+        setDayValue(existingLog ? existingLog.value : ""); // preenche se houver log
     };
 
+    // Salvar/editar o log de um dia
     const handleSaveDayLog = async (e) => {
         e.preventDefault();
         if (!selectedDay) return;
@@ -54,26 +61,28 @@ export default function HabitItem({ habit, onEdit, onDelete }) {
 
         try {
             await logHabit(habit.id, dayValue || 1, dateStr);
-            await loadLogs();
-            setSelectedDay(null);
+            await loadLogs();           // Recarrega após salvar
+            setSelectedDay(null);       // fecha modal
         } catch (error) {
             alert("Erro ao salvar o registro.");
         }
     };
 
+    // Remover log do dia
     const handleDeleteLog = async () => {
         if (!selectedDay) return;
         const dateStr = formatDate(selectedDay);
 
         try {
             await deleteHabitLog(habit.id, dateStr);
-            await loadLogs();
+            await loadLogs();           // Recarrega estado
             setSelectedDay(null);
         } catch (error) {
             alert("Erro ao remover o registro.");
         }
     };
 
+    // Botão "Complete Today"
     const handleCompleteToday = async () => {
         const todayStr = formatDate(new Date());
         try {
@@ -84,14 +93,15 @@ export default function HabitItem({ habit, onEdit, onDelete }) {
         }
     };
 
+    // Marca se o dia atual já tem log
     const isCompletedToday = history[formatDate(new Date())] !== undefined;
     const todayStr = formatDate(new Date());
 
-
+    // Gera matriz 7x53 alinhada
     const { alignedDays, weeks } = buildAlignedCalendar(2025);
     const gridRef = useRef(null);
 
-    // Scroll automático para o dia atual no heatmap
+    // Scroll automático para o dia atual
     useEffect(() => {
         if (!gridRef.current || alignedDays.length === 0) return;
 
@@ -99,16 +109,21 @@ export default function HabitItem({ habit, onEdit, onDelete }) {
         if (idx === -1) return;
 
         const col = Math.floor(idx / 7);
-
         const columnWidth = 26;
+
         const scrollPos = col * columnWidth - gridRef.current.clientWidth / 2;
 
         gridRef.current.scrollTo({ left: scrollPos, behavior: "smooth" });
     }, [alignedDays]);
 
+    // ---- Cores dinâmicas do Heatmap ----
+    const valuesArray = Object.values(history);
+    const maxValue = valuesArray.length > 0 ? Math.max(...valuesArray) : 0;
+    // --- vão ser usadas no mapeamento de cores do heatmap ---
+
     return (
-        <div className="bg-gray-50 rounded-xl p-6 mb-6 shadow-sm border border-gray-200 relative">
-            <div className="flex justify-between items-start mb-4">
+        <div className="bg-gray-50 rounded-xl p-4 mb-4 shadow-sm border border-gray-200 relative">
+            <div className="flex justify-between items-start mb-2">
                 <div>
                     <h3 className="text-xl font-bold text-gray-800">{habit.name}</h3>
                     <p className="text-sm text-gray-500 font-medium">
@@ -150,29 +165,38 @@ export default function HabitItem({ habit, onEdit, onDelete }) {
                         return (
                             <div
                                 key={index}
-                                className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 rounded-[4px] bg-transparent"
+                                className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 rounded-[4px] bg-transparent"
                             />
                         );
                     }
 
                     const dateStr = formatDate(date);
-                    const hasLog = history[dateStr] !== undefined;
+                    const value = history[dateStr];
+                    const hasLog = value != null && value > 0;
                     const isToday = dateStr === todayStr;
+
+                    // intensidade entre 0 e 1
+                    const intensity = hasLog && maxValue > 0
+                        ? Math.min(value / data.AveragePerDay, 1)
+                        : 0;
+
+                    const backgroundColor = hasLog
+                        ? shadeColor(habit.colorCode || "#4F46E5", intensity)
+                        : "#e5e7eb"; // bg-gray-200
 
                     return (
                         <div
                             key={index}
                             onClick={() => handleDayClick(date)}
-                            title={`${dateStr} ${hasLog ? '- Feito' : ''}`}
+                            title={`${dateStr} ${hasLog ? '- Done: ' + value + ' ' + data.unit : ''}`}
                             className={`
-                                        w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6
+                                        w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5
                                         rounded-[4px] cursor-pointer transition-all
-                                        ${hasLog ? '' : 'bg-gray-200'}
                                         ${isToday ? 'ring-2 ring-indigo-500 ring-offset-1' : ''}
                                         hover:ring-2 hover:ring-offset-1 hover:ring-indigo-400
                                     `}
                             style={{
-                                backgroundColor: hasLog ? (habit.colorCode || '#4F46E5') : undefined
+                                backgroundColor: backgroundColor
                             }}
                         />
                     );
@@ -183,7 +207,7 @@ export default function HabitItem({ habit, onEdit, onDelete }) {
                 selectedDay && (
                     <div className="absolute inset-0 bg-white/95 backdrop-blur-sm rounded-xl flex items-center justify-center z-10 animate-in fade-in duration-200">
                         <form onSubmit={handleSaveDayLog} className="bg-white p-6 rounded-lg shadow-xl border border-gray-200 w-80">
-                            <div className="flex justify-between items-center mb-4">
+                            <div className="flex justify-between items-center mb-2">
                                 <h4 className="font-bold text-gray-700">
                                     {selectedDay.toLocaleDateString()}
                                 </h4>
@@ -196,7 +220,7 @@ export default function HabitItem({ habit, onEdit, onDelete }) {
                                 </button>
                             </div>
 
-                            <div className="mb-4">
+                            <div className="mb-2">
                                 <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">
                                     Qtd ({habit.unit})
                                 </label>
@@ -241,31 +265,83 @@ export default function HabitItem({ habit, onEdit, onDelete }) {
             }
 
             <div className="flex flex-col md:flex-row justify-between items-end gap-4">
+
+                {/* Métricas do hábito */}
                 <div className="flex flex-col gap-1 text-sm text-gray-600">
+
+                    {/* Streak atual */}
                     <div className="flex items-center gap-2">
-                        <span className="text-orange-500 font-bold">🔥 Streak: {localLogs.length > 0 ? 'Active' : 0}</span>
+                        <span className="text-lg">🔥</span>
+                        <span className="font-bold text-orange-600">
+                            Current Streak: {data.currentStreak}
+                        </span>
                     </div>
+
+                    {/* Máximo streak */}
                     <div className="flex items-center gap-2">
-                        <span className="font-medium text-gray-400">📊 Total Logs: {localLogs.length}</span>
+                        <span className="text-lg">🏆</span>
+                        <span className="font-medium">
+                            Max Streak: {data.maxStreak}
+                        </span>
                     </div>
+
+                    {/* Média */}
+                    <div className="flex items-center gap-2">
+                        <span className="text-lg">📊</span>
+                        <span className="font-medium text-gray-700">
+                            Average (of filled days): {data.AveragePerDay} {data.unit}
+                        </span>
+                    </div>
+
+                    {/* Total de logs */}
+                    <div className="flex items-center gap-2">
+                        <span className="text-lg">🗂️</span>
+                        <span className="font-medium text-gray-500">
+                            Total Logs: {Object.keys(history).length}
+                        </span>
+                    </div>
+
                 </div>
 
+                {/* Botão de completar hoje */}
                 <div className="flex items-center gap-3">
                     <button
                         onClick={handleCompleteToday}
                         className="flex items-center gap-2 px-6 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 font-semibold shadow-sm hover:bg-gray-50 transition-all active:scale-95"
                     >
                         <div className={`w-5 h-5 rounded border-2 border-gray-300 flex items-center justify-center ${isCompletedToday ? 'bg-green-500 border-green-500' : ''}`}>
-                            {isCompletedToday && <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>}
+                            {isCompletedToday && (
+                                <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                                </svg>
+                            )}
                         </div>
+
                         {isCompletedToday ? "Completed Today" : "Complete Today"}
                     </button>
                 </div>
+
             </div>
+
         </div >
     );
 }
 
+// Ajusta cor com base na intensidade (0-1)
+function shadeColor(hex, factor) {
+
+    const r = parseInt(hex.substring(1, 3), 16);
+    const g = parseInt(hex.substring(3, 5), 16);
+    const b = parseInt(hex.substring(5, 7), 16);
+
+    const newR = Math.round(r + (255 - r) * (1 - factor));
+    const newG = Math.round(g + (255 - g) * (1 - factor));
+    const newB = Math.round(b + (255 - b) * (1 - factor));
+
+    return `rgb(${newR}, ${newG}, ${newB})`;
+}
+
+// Converte Date para "YYYY-MM-DD"
 const formatDate = (date) => {
     if (!date) return null;
     const year = date.getFullYear();
@@ -275,6 +351,7 @@ const formatDate = (date) => {
     return `${year}-${month}-${day}`;
 };
 
+// Cria matriz 53 colunas × 7 linhas alinhada por semanas
 function buildAlignedCalendar(year) {
     const days = [];
     let d = new Date(year, 0, 1);
