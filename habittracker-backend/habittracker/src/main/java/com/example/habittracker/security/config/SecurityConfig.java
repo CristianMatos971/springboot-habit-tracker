@@ -44,9 +44,9 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of("http://localhost:5173",
-                "springboot-habit-tracker.vercel.app",
-                "springboot-habit-tracker-git-main-cristian-matos-projects.vercel.app",
-                "springboot-habit-tracker-f3jux4f5z-cristian-matos-projects.vercel.app"));
+                "https://springboot-habit-tracker.vercel.app",
+                "https://springboot-habit-tracker-git-main-cristian-matos-projects.vercel.app",
+                "https://springboot-habit-tracker-f3jux4f5z-cristian-matos-projects.vercel.app"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
