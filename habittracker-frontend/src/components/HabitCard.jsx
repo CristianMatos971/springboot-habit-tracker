@@ -61,14 +61,14 @@ export default function HabitCard() {
     };
 
     return (
-        <div className="max-h-[80vh] min-h-[750px] bg-white rounded-xl shadow-md p-6 border-2 border-indigo-600 flex flex-col relative overflow-hidden">
+        <div className="max-h-[80vh] min-h-[750px] bg-white dark:bg-[#353b5c] dark:border-gray-600 rounded-xl shadow-md p-6 border-2 border-indigo-600 flex flex-col relative overflow-hidden">
             <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-800">Habits Dashboard</h2>
+                <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Habits Dashboard</h2>
 
                 {isFormOpen && (
                     <button
                         onClick={resetForm}
-                        className="text-base text-gray-500 hover:text-gray-700 underline"
+                        className="text-base text-gray-500 dark:text-gray-50 hover:text-gray-700 underline"
                     >
                         Cancel
                     </button>
@@ -83,7 +83,7 @@ export default function HabitCard() {
                             type="text"
                             value={formData.name}
                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-base"
+                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-base text-gray-900 bg-white"
                             placeholder="Ex: Estudar Diariamente"
                             required
                         />
@@ -96,7 +96,7 @@ export default function HabitCard() {
                                 type="text"
                                 value={formData.unit}
                                 onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
-                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-base"
+                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-base text-gray-900 bg-white"
                                 placeholder="Ex: pages, sessions"
                                 required
                             />
@@ -108,7 +108,7 @@ export default function HabitCard() {
                                 step="0.1"
                                 value={formData.goal}
                                 onChange={(e) => setFormData({ ...formData, goal: e.target.value })}
-                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-base"
+                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-base text-gray-900 bg-white"
                                 placeholder="0.0"
                                 required
                             />
@@ -124,7 +124,7 @@ export default function HabitCard() {
                                 onChange={(e) => setFormData({ ...formData, colorCode: e.target.value })}
                                 className="h-12 w-20 p-1 bg-white border border-gray-300 rounded cursor-pointer"
                             />
-                            <span className="text-gray-500 font-mono">{formData.colorCode}</span>
+                            <span className="text-gray-500 dark:text-gray-50 font-mono">{formData.colorCode}</span>
                         </div>
                     </div>
 

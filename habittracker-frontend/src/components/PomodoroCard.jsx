@@ -80,6 +80,23 @@ export default function PomodoroCard() {
         return () => clearInterval(interval);
     }, [isRunning, time]);
 
+    //Use effect para atualizar o título da página seguindo o timer.
+    useEffect(() => {
+        const minutes = String(Math.floor(time / 60)).padStart(2, "0");
+        const seconds = String(time % 60).padStart(2, "0");
+
+        let modeLabel = "Focus";
+        if (mode === "rest") modeLabel = "Break";
+        if (mode === "longRest") modeLabel = "Long Break";
+
+        // Atualiza o título do navegador (ex: 24:59 - Focus)
+        document.title = `${minutes}:${seconds} - ${modeLabel}`;
+
+        // Cleanup: Quando o usuário sair dessa página/componente, volta ao título original
+        return () => {
+            document.title = "Matt's Habit Tracker";
+        };
+    }, [time, mode]);
 
     const playAlarm = () => {
         setIsAlarmPlaying(true);
@@ -150,14 +167,14 @@ export default function PomodoroCard() {
 
     return (
         <>
-            <div className="min-h-[350px] bg-white rounded-xl shadow-xl p-8 flex flex-col items-center gap-6 border-2 border-indigo-600 ">
+            <div className="min-h-[350px] bg-white dark:bg-[#353b5c] dark:border-gray-600 rounded-xl shadow-xl p-8 flex flex-col items-center gap-6 border-2 border-indigo-600 ">
 
                 <div className="flex flex-col items-center gap-2">
-                    <h2 className={`text-xl font-bold uppercase tracking-widest ${mode === "focus" ? "text-indigo-600" : "text-green-600"}`}>
+                    <h2 className={`text-xl font-bold uppercase tracking-widest ${mode === "focus" ? "text-indigo-600 dark:text-gray-100" : "text-green-600"}`}>
                         {mode === "focus" ? "Focus Time" : "Rest Time"}
                     </h2>
 
-                    <label className="text-indigo-800 font-medium">
+                    <label className="text-indigo-800 dark:text-gray-100 font-medium">
                         <input
                             type="checkbox"
                             checked={autoSkip}
@@ -165,7 +182,7 @@ export default function PomodoroCard() {
                         /> Auto Skip Alarms
                     </label>
 
-                    <div className="p-8 text-7xl font-bold text-gray-800 tracking-tight">
+                    <div className="p-8 text-7xl font-bold text-gray-800 dark:text-gray-100 tracking-tight">
                         {minutes}:{seconds}
                     </div>
                 </div>

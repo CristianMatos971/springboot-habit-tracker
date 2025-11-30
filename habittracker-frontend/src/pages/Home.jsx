@@ -7,17 +7,17 @@ function Home() {
     const { user, isAuthenticated } = useAuth();
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
             <Header />
 
             <main className="px-6 py-16 max-w-5xl mx-auto">
                 {/* Hero Section */}
                 <div className="text-center mb-16">
-                    <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight">
+                    <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-gray-50 tracking-tight">
                         Welcome{user ? `, ${user.name}` : ""}!
                     </h1>
 
-                    <p className="mt-6 text-lg md:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                    <p className="mt-6 text-lg md:text-xl text-gray-600 dark:text-gray-100 max-w-2xl mx-auto leading-relaxed">
                         This platform helps you build consistency and stay productive.
                         Track your habits, organize your tasks, and stay focused — all in one clean dashboard.
                     </p>
@@ -66,14 +66,14 @@ function Home() {
 // Componente interno para evitar repetição de código e manter o design limpo
 function FeatureCard({ icon, title, description }) {
     return (
-        <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300">
+        <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300">
             <div className="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center mb-6">
                 {icon}
             </div>
-            <h2 className="text-xl font-bold text-gray-900 mb-3">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3">
                 {title}
             </h2>
-            <p className="text-gray-600 leading-relaxed">
+            <p className="text-gray-600 text-gray-800 dark:text-gray-50 leading-relaxed">
                 {description}
             </p>
         </div>

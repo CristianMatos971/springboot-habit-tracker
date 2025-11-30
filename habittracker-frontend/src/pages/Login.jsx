@@ -46,12 +46,14 @@ export default function Login() {
         <>
             <Header />
 
-            <div className="flex justify-center bg-gray-100 pt-20 pb-20">
+            <div className="flex justify-center bg-gray-100 dark:bg-gray-800 pt-20 pb-20 transition-colors duration-300">
                 <form
                     onSubmit={handleSubmit}
-                    className="bg-white p-8 rounded-2xl shadow-md w-80"
+                    className="bg-white dark:bg-gray-700 p-8 rounded-2xl shadow-md w-80 transition-colors duration-300"
                 >
-                    <h2 className="text-2xl font-semibold mb-6 text-center">Login</h2>
+                    <h2 className="text-2xl font-semibold mb-6 text-center text-gray-900 dark:text-white">
+                        Login
+                    </h2>
 
                     {errors.api && <p className="text-red-600 text-sm">{errors.api}</p>}
                     {errors.email && <p className="text-red-600 text-sm">{errors.email}</p>}
@@ -60,7 +62,7 @@ export default function Login() {
                     <input
                         type="email"
                         placeholder="Email"
-                        className="border w-full p-2 mb-4 rounded"
+                        className="border w-full p-2 mb-4 rounded text-gray-900 bg-white border-gray-300 focus:outline-none focus:border-blue-500"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                     />
@@ -69,14 +71,14 @@ export default function Login() {
                         <input
                             type={showPassword ? "text" : "password"}
                             placeholder="Password"
-                            className="border w-full p-2 rounded"
+                            className="border w-full p-2 rounded text-gray-900 bg-white border-gray-300 focus:outline-none focus:border-blue-500"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                         />
 
                         <button
                             type="button"
-                            className="absolute right-2 top-2 text-sm text-blue-600"
+                            className="absolute right-2 top-2 text-sm text-blue-600 font-medium hover:text-blue-800"
                             onClick={() => setShowPassword(!showPassword)}
                         >
                             {showPassword ? "Hide" : "Show"}
@@ -85,14 +87,14 @@ export default function Login() {
 
                     <button
                         type="submit"
-                        className="bg-blue-600 text-white w-full py-2 rounded hover:bg-blue-700"
+                        className="bg-blue-600 text-white w-full py-2 rounded hover:bg-blue-700 transition-colors font-medium shadow-sm"
                     >
                         Login
                     </button>
 
-                    <p className="text-center text-sm mt-4">
+                    <p className="text-center text-sm mt-4 text-gray-600 dark:text-gray-300">
                         Don't have an account?{" "}
-                        <Link to="/register" className="text-blue-600 hover:underline">
+                        <Link to="/register" className="text-blue-600 hover:underline font-medium dark:text-blue-400">
                             Register
                         </Link>
                     </p>

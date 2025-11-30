@@ -122,26 +122,29 @@ export default function HabitItem({ habit, onEdit, onDelete }) {
     // --- vão ser usadas no mapeamento de cores do heatmap ---
 
     return (
-        <div className="bg-gray-50 rounded-xl p-4 mb-4 shadow-sm border border-gray-200 relative">
+        <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 mb-4 shadow-sm border border-gray-200 dark:border-gray-700 relative transition-colors duration-300">
             <div className="flex justify-between items-start mb-2">
                 <div>
-                    <h3 className="text-xl font-bold text-gray-800">{habit.name}</h3>
-                    <p className="text-sm text-gray-500 font-medium">
+                    {/* Título e Subtítulo */}
+                    <h3 className="text-xl font-bold text-gray-800 dark:text-white">{habit.name}</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
                         Goal: {habit.goal} {habit.unit}
                     </p>
                 </div>
 
                 <div className="flex gap-2">
+                    {/* Botão Editar */}
                     <button
                         onClick={() => onEdit(habit)}
-                        className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-gray-200 rounded-lg transition-colors"
+                        className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-gray-200 dark:hover:bg-gray-700 dark:hover:text-indigo-400 rounded-lg transition-colors"
                         title="Editar"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
                     </button>
+                    {/* Botão Deletar */}
                     <button
                         onClick={() => onDelete(habit.id)}
-                        className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 dark:hover:text-red-400 rounded-lg transition-colors"
                         title="Deletar"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
@@ -149,10 +152,11 @@ export default function HabitItem({ habit, onEdit, onDelete }) {
                 </div>
             </div>
 
-            <div className="flex justify-center items-center gap-4 mb-3 text-sm font-bold text-gray-700">
-                <button className="hover:bg-gray-200 p-1 rounded text-gray-400">&lt;</button>
+            {/* Navegação do Ano */}
+            <div className="flex justify-center items-center gap-4 mb-3 text-sm font-bold text-gray-700 dark:text-gray-300">
+                <button className="hover:bg-gray-200 dark:hover:bg-gray-700 p-1 rounded text-gray-400 dark:text-gray-500 dark:hover:text-gray-300">&lt;</button>
                 <span>2025</span>
-                <button className="hover:bg-gray-200 p-1 rounded text-gray-400">&gt;</button>
+                <button className="hover:bg-gray-200 dark:hover:bg-gray-700 p-1 rounded text-gray-400 dark:text-gray-500 dark:hover:text-gray-300">&gt;</button>
             </div>
 
             {/* Grid 7x53 (Heatmap) */}
@@ -190,11 +194,11 @@ export default function HabitItem({ habit, onEdit, onDelete }) {
                             onClick={() => handleDayClick(date)}
                             title={`${dateStr} ${hasLog ? '- Done: ' + value + ' ' + data.unit : ''}`}
                             className={`
-                                        w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5
-                                        rounded-[4px] cursor-pointer transition-all
-                                        ${isToday ? 'ring-2 ring-indigo-500 ring-offset-1' : ''}
-                                        hover:ring-2 hover:ring-offset-1 hover:ring-indigo-400
-                                    `}
+                                    w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5
+                                    rounded-[4px] cursor-pointer transition-all
+                                    ${isToday ? 'ring-2 ring-indigo-500 ring-offset-1 dark:ring-offset-gray-800' : ''}
+                                    hover:ring-2 hover:ring-offset-1 dark:hover:ring-offset-gray-800 hover:ring-indigo-400
+                                `}
                             style={{
                                 backgroundColor: backgroundColor
                             }}
@@ -205,23 +209,23 @@ export default function HabitItem({ habit, onEdit, onDelete }) {
 
             {
                 selectedDay && (
-                    <div className="absolute inset-0 bg-white/95 backdrop-blur-sm rounded-xl flex items-center justify-center z-10 animate-in fade-in duration-200">
-                        <form onSubmit={handleSaveDayLog} className="bg-white p-6 rounded-lg shadow-xl border border-gray-200 w-80">
+                    <div className="absolute inset-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm rounded-xl flex items-center justify-center z-10 animate-in fade-in duration-200">
+                        <form onSubmit={handleSaveDayLog} className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 w-80 transition-colors">
                             <div className="flex justify-between items-center mb-2">
-                                <h4 className="font-bold text-gray-700">
+                                <h4 className="font-bold text-gray-700 dark:text-gray-200">
                                     {selectedDay.toLocaleDateString()}
                                 </h4>
                                 <button
                                     type="button"
                                     onClick={() => setSelectedDay(null)}
-                                    className="text-gray-400 hover:text-gray-600"
+                                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                                 </button>
                             </div>
 
                             <div className="mb-2">
-                                <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">
+                                <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">
                                     Qtd ({habit.unit})
                                 </label>
                                 <input
@@ -230,7 +234,8 @@ export default function HabitItem({ habit, onEdit, onDelete }) {
                                     autoFocus
                                     value={dayValue}
                                     onChange={(e) => setDayValue(e.target.value)}
-                                    className="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-indigo-500 outline-none"
+                                    // INPUT: Ajustado para fundo branco e texto preto (como nos outros forms) ou dark mode completo
+                                    className="w-full border border-gray-300 dark:border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-indigo-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white dark:placeholder-gray-400"
                                     placeholder={`Meta: ${habit.goal}`}
                                 />
                             </div>
@@ -240,7 +245,7 @@ export default function HabitItem({ habit, onEdit, onDelete }) {
                                     <button
                                         type="button"
                                         onClick={handleDeleteLog}
-                                        className="px-3 py-2 bg-red-100 text-red-600 rounded-md hover:bg-red-200 font-medium"
+                                        className="px-3 py-2 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-md hover:bg-red-200 dark:hover:bg-red-900/50 font-medium transition-colors"
                                         title="Remover registro"
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -253,7 +258,7 @@ export default function HabitItem({ habit, onEdit, onDelete }) {
 
                                 <button
                                     type="submit"
-                                    className="flex-1 bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 font-medium"
+                                    className="flex-1 bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 dark:hover:bg-indigo-500 font-medium transition-colors"
                                 >
                                     Salvar
                                 </button>
@@ -267,12 +272,12 @@ export default function HabitItem({ habit, onEdit, onDelete }) {
             <div className="flex flex-col md:flex-row justify-between items-end gap-4">
 
                 {/* Métricas do hábito */}
-                <div className="flex flex-col gap-1 text-sm text-gray-600">
+                <div className="flex flex-col gap-1 text-sm text-gray-600 dark:text-gray-400">
 
                     {/* Streak atual */}
                     <div className="flex items-center gap-2">
                         <span className="text-lg">🔥</span>
-                        <span className="font-bold text-orange-600">
+                        <span className="font-bold text-orange-600 dark:text-orange-500">
                             Current Streak: {data.currentStreak}
                         </span>
                     </div>
@@ -288,7 +293,7 @@ export default function HabitItem({ habit, onEdit, onDelete }) {
                     {/* Média */}
                     <div className="flex items-center gap-2">
                         <span className="text-lg">📊</span>
-                        <span className="font-medium text-gray-700">
+                        <span className="font-medium text-gray-700 dark:text-gray-300">
                             Average (of filled days): {data.AveragePerDay} {data.unit}
                         </span>
                     </div>
@@ -296,7 +301,7 @@ export default function HabitItem({ habit, onEdit, onDelete }) {
                     {/* Total de logs */}
                     <div className="flex items-center gap-2">
                         <span className="text-lg">🗂️</span>
-                        <span className="font-medium text-gray-500">
+                        <span className="font-medium text-gray-500 dark:text-gray-400">
                             Total Logs: {Object.keys(history).length}
                         </span>
                     </div>
@@ -307,9 +312,9 @@ export default function HabitItem({ habit, onEdit, onDelete }) {
                 <div className="flex items-center gap-3">
                     <button
                         onClick={handleCompleteToday}
-                        className="flex items-center gap-2 px-6 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 font-semibold shadow-sm hover:bg-gray-50 transition-all active:scale-95"
+                        className="flex items-center gap-2 px-6 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-200 font-semibold shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 transition-all active:scale-95"
                     >
-                        <div className={`w-5 h-5 rounded border-2 border-gray-300 flex items-center justify-center ${isCompletedToday ? 'bg-green-500 border-green-500' : ''}`}>
+                        <div className={`w-5 h-5 rounded border-2 border-gray-300 dark:border-gray-500 flex items-center justify-center ${isCompletedToday ? 'bg-green-500 border-green-500 dark:border-green-500' : ''}`}>
                             {isCompletedToday && (
                                 <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />

@@ -68,14 +68,14 @@ export default function TasksCard() {
     };
 
     return (
-        <div className="max-h-[80vh] min-h-[750px] bg-white rounded-xl shadow-md p-6 border-2 border-indigo-600 flex flex-col relative">
+        <div className="max-h-[80vh] min-h-[750px] bg-white dark:bg-[#353b5c] dark:border-gray-600 rounded-xl shadow-md p-6 border-2 border-indigo-600 flex flex-col relative">
             <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-800">Tasks</h2>
+                <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Tasks</h2>
 
                 {isFormOpen && (
                     <button
                         onClick={resetForm}
-                        className="text-base text-gray-500 hover:text-gray-700 underline"
+                        className="text-base text-gray-500 dark:text-gray-100 hover:text-gray-700 underline"
                     >
                         Cancel
                     </button>
@@ -85,12 +85,12 @@ export default function TasksCard() {
             {isFormOpen ? (
                 <form onSubmit={handleSubmit} className="flex flex-col gap-5 animate-in fade-in slide-in-from-bottom-4 duration-300">
                     <div>
-                        <label className="block text-base font-medium text-gray-700 mb-1">Title</label>
+                        <label className="block text-base font-medium text-gray-700 dark:text-gray-100 mb-1">Title</label>
                         <input
                             type="text"
                             value={formData.title}
                             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-base"
+                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-base text-gray-900 bg-white border-gray-300"
                             placeholder="Ex: Study Spring Security"
                             required
                         />
@@ -101,7 +101,7 @@ export default function TasksCard() {
                         <textarea
                             value={formData.description}
                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none h-28 resize-none text-base"
+                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none h-28 resize-none text-base text-gray-900 bg-white"
                             placeholder="Add details..."
                         />
                     </div>
@@ -112,7 +112,7 @@ export default function TasksCard() {
                             type="datetime-local"
                             value={formData.deadline}
                             onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
-                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-gray-600 text-base"
+                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-gray-900 bg-white"
                         />
                     </div>
 
