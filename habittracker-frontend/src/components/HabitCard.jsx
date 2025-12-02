@@ -78,7 +78,7 @@ export default function HabitCard() {
             {isFormOpen ? (
                 <form onSubmit={handleSubmit} className="flex flex-col gap-5 animate-in fade-in slide-in-from-bottom-4 duration-300">
                     <div>
-                        <label className="block text-base font-medium text-gray-700 mb-1">Name</label>
+                        <label className="block text-base font-medium text-gray-700 dark:text-gray-50 mb-1">Name</label>
                         <input
                             type="text"
                             value={formData.name}
@@ -91,7 +91,7 @@ export default function HabitCard() {
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-base font-medium text-gray-700 mb-1">Unit</label>
+                            <label className="block text-base font-medium text-gray-700 dark:text-gray-50 mb-1">Unit</label>
                             <input
                                 type="text"
                                 value={formData.unit}
@@ -102,7 +102,7 @@ export default function HabitCard() {
                             />
                         </div>
                         <div>
-                            <label className="block text-base font-medium text-gray-700 mb-1">Daily Goal</label>
+                            <label className="block text-base font-medium text-gray-700 dark:text-gray-50 mb-1">Daily Goal</label>
                             <input
                                 type="number"
                                 step="0.1"
@@ -116,7 +116,7 @@ export default function HabitCard() {
                     </div>
 
                     <div>
-                        <label className="block text-base font-medium text-gray-700 mb-1">Theme Color</label>
+                        <label className="block text-base font-medium text-gray-700 dark:text-gray-50 mb-1">Theme Color</label>
                         <div className="flex items-center gap-4">
                             <input
                                 type="color"

@@ -64,21 +64,32 @@ export default function PomodoroCard() {
 
     }, [focusTime, restTime, longRestTime, cycles, alarmVolume]);
 
-    //Lógica do Timer
     useEffect(() => {
         let interval = null;
 
         if (isRunning && time > 0) {
+            const targetTime = Date.now() + time * 1000;
+
             interval = setInterval(() => {
-                setTime((prev) => prev - 1);
-            }, 1000);
-        } else if (time === 0 && isRunning) {
-            setIsRunning(false);
-            playAlarm();
+                const now = Date.now();
+                const difference = targetTime - now;
+
+                const secondsLeft = Math.ceil(difference / 1000);
+
+                if (secondsLeft <= 0) {
+                    setTime(0);
+                    setIsRunning(false);
+                    playAlarm();
+                    clearInterval(interval);
+                } else {
+                    setTime(secondsLeft);
+                }
+            }, 100);
         }
 
         return () => clearInterval(interval);
-    }, [isRunning, time]);
+
+    }, [isRunning]);
 
     //Use effect para atualizar o título da página seguindo o timer.
     useEffect(() => {
