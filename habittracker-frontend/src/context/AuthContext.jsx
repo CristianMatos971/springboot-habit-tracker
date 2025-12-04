@@ -1,6 +1,7 @@
 import { useContext, createContext, useState, useEffect } from "react";
 import { login as loginService } from "../services/authService";
 import { register as registerService } from "../services/authService";
+import { jwtDecode } from "jwt-decode";
 
 export const AuthContext = createContext();
 
@@ -14,6 +15,18 @@ export function AuthProvider({ children }) {
             return null;
         }
     });
+
+    useEffect(() => {
+        const storedToken = localStorage.getItem("token");
+        const storedUser = localStorage.getItem("user");
+
+        if (storedToken && isTokenValid(storedToken)) {
+            setToken(storedToken);
+            setUser(storedUser ? JSON.parse(storedUser) : null);
+        } else {
+            logout();
+        }
+    }, []);
 
     useEffect(() => {
         if (!token) return;
@@ -59,10 +72,21 @@ export function AuthProvider({ children }) {
         localStorage.removeItem("user");
     }
 
+    function isTokenValid(token) {
+        if (!token) return false;
+
+        try {
+            const decoded = jwtDecode(token);
+            return decoded.exp * 1000 > Date.now();
+        } catch (err) {
+            return false;
+        }
+    }
+
     const value = {
         user,
         token,
-        isAuthenticated: Boolean(token),
+        isAuthenticated: token && isTokenValid(token),
         register,
         login,
         logout
