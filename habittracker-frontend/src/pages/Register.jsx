@@ -58,76 +58,90 @@ export default function Register() {
         <>
             <Header />
 
-            <div className="flex justify-center bg-gray-100 dark:bg-gray-800 pt-20 pb-20 transition-colors duration-300">
+            <div className="min-h-[80vh] flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4 transition-colors duration-300">
                 <form
                     onSubmit={handleSubmit}
-                    className="bg-white dark:bg-gray-700 p-8 rounded-2xl shadow-md w-80 transition-colors duration-300"
+                    className="w-full max-w-md bg-white dark:bg-gray-800 p-8 sm:p-10 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 transition-all duration-300"
                 >
-                    <h2 className="text-2xl font-semibold mb-6 text-center text-gray-900 dark:text-white">
-                        Register
-                    </h2>
+                    <div className="mb-8 text-center">
+                        <h2 className="text-3xl font-bold text-gray-800 dark:text-white">
+                            Create Account
+                        </h2>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                            Join us to start tracking your habits
+                        </p>
+                    </div>
 
-                    {errors.api && <p className="text-red-600 text-sm">{errors.api}</p>}
-                    {errors.name && <p className="text-red-600 text-sm">{errors.name}</p>}
-                    {errors.email && <p className="text-red-600 text-sm">{errors.email}</p>}
-                    {errors.password && <p className="text-red-600 text-sm">{errors.password}</p>}
-                    {errors.confirmPassword && (
-                        <p className="text-red-600 text-sm">{errors.confirmPassword}</p>
-                    )}
+                    {errors.api && <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg text-red-600 dark:text-red-400 text-sm text-center">{errors.api}</div>}
 
-                    <input
-                        type="text"
-                        placeholder="Name"
-                        className="border w-full p-2 mb-4 rounded text-gray-900 bg-white border-gray-300 focus:outline-none focus:border-blue-500"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                    />
+                    <div className="space-y-4">
+                        <div>
+                            {errors.name && <span className="text-red-500 text-xs float-right">{errors.name}</span>}
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
+                            <input
+                                type="text"
+                                placeholder="John Doe"
+                                className="w-full px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                            />
+                        </div>
 
-                    <input
-                        type="email"
-                        placeholder="Email"
-                        className="border w-full p-2 mb-4 rounded text-gray-900 bg-white border-gray-300 focus:outline-none focus:border-blue-500"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
+                        <div>
+                            {errors.email && <span className="text-red-500 text-xs float-right">{errors.email}</span>}
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+                            <input
+                                type="email"
+                                placeholder="name@example.com"
+                                className="w-full px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                            />
+                        </div>
 
-                    <div className="relative mb-4">
-                        <input
-                            type={showPassword ? "text" : "password"}
-                            placeholder="Password"
-                            className="border w-full p-2 rounded text-gray-900 bg-white border-gray-300 focus:outline-none focus:border-blue-500"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
+                        <div className="relative">
+                            {errors.password && <span className="text-red-500 text-xs float-right">{errors.password}</span>}
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                placeholder="Create a password"
+                                className="w-full px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
+                            <button
+                                type="button"
+                                className="absolute right-3 top-[34px] text-sm text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 transition-colors"
+                                onClick={() => setShowPassword(!showPassword)}
+                            >
+                                {showPassword ? "Hide" : "Show"}
+                            </button>
+                        </div>
+
+                        <div>
+                            {errors.confirmPassword && <span className="text-red-500 text-xs float-right">{errors.confirmPassword}</span>}
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Confirm Password</label>
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                placeholder="Confirm your password"
+                                className="w-full px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                            />
+                        </div>
 
                         <button
-                            type="button"
-                            className="absolute right-2 top-2 text-sm text-blue-600 font-medium hover:text-blue-800"
-                            onClick={() => setShowPassword(!showPassword)}
+                            type="submit"
+                            className="w-full py-3.5 px-4 mt-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200"
                         >
-                            {showPassword ? "Hide" : "Show"}
+                            Sign Up
                         </button>
                     </div>
 
-                    <input
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Confirm Password"
-                        className="border w-full p-2 mb-6 rounded text-gray-900 bg-white border-gray-300 focus:outline-none focus:border-blue-500"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                    />
-
-                    <button
-                        type="submit"
-                        className="bg-blue-600 text-white w-full py-2 rounded hover:bg-blue-700 transition-colors font-medium shadow-sm"
-                    >
-                        Register
-                    </button>
-
-                    <p className="text-center text-sm mt-4 text-gray-600 dark:text-gray-300">
+                    <p className="text-center text-sm mt-8 text-gray-600 dark:text-gray-400">
                         Already have an account?{" "}
-                        <Link to="/login" className="text-blue-600 hover:underline font-medium dark:text-blue-400">
-                            Login
+                        <Link to="/login" className="text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 font-semibold hover:underline transition-colors">
+                            Log in
                         </Link>
                     </p>
                 </form>

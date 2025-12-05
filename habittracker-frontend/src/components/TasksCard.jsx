@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useTasks } from "../hooks/useTasks";
+import { useAuth } from "../context/AuthContext";
+
 
 export default function TasksCard() {
     const { tasks, addTask, toggleTask, updateTask, deleteTask } = useTasks();

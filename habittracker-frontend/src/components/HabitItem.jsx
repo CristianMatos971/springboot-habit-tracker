@@ -196,7 +196,7 @@ export default function HabitItem({ habit, onEdit, onDelete }) {
                             className={`
                                     w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5
                                     rounded-[4px] cursor-pointer transition-all
-                                    ${isToday ? 'ring-2 ring-indigo-500 ring-offset-1 dark:ring-offset-gray-800' : ''}
+                                    ${isToday ? 'ring-4 ring-green-500 ring-offset-1 dark:ring-offset-gray-800' : ''}
                                     hover:ring-2 hover:ring-offset-1 dark:hover:ring-offset-gray-800 hover:ring-indigo-400
                                 `}
                             style={{

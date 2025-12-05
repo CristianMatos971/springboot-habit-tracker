@@ -84,7 +84,7 @@ export default function HabitCard() {
                             value={formData.name}
                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                             className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-base text-gray-900 bg-white"
-                            placeholder="Ex: Estudar Diariamente"
+                            placeholder="Ex: Study Daily"
                             required
                         />
                     </div>

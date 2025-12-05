@@ -1,15 +1,20 @@
 import { useState, useEffect } from "react";
 import * as taskService from "../services/taskService"; 1
+import { useAuth } from "../context/AuthContext"; // Importa o hook de autenticação
 
 export function useTasks() {
+    const { user } = useAuth(); // Adicionado: Verificação de usuário
     const [tasks, setTasks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // 1. Carregar tarefas ao montar o componente
     useEffect(() => {
-        fetchTasks();
-    }, []);
+        if (user) {
+            fetchTasks();
+        } else {
+            setLoading(false);
+        }
+    }, [user]);
 
     async function fetchTasks() {
         try {
@@ -25,23 +30,38 @@ export function useTasks() {
     }
 
     async function addTask(taskData) {
-        try {
-            const newTask = await taskService.addTask(taskData);
+        // Lógica bifurcada (Backend vs RAM)
+        if (user) {
+            try {
+                const newTask = await taskService.addTask(taskData);
+                setTasks((prev) => [...prev, newTask]);
+                return newTask;
+            } catch (err) {
+                console.error(err);
+                throw err;
+            }
+        } else {
+            const newTask = {
+                ...taskData,
+                id: Date.now(),
+                completed: false
+            };
             setTasks((prev) => [...prev, newTask]);
             return newTask;
-        } catch (err) {
-            console.error(err);
-            throw err;
         }
     }
 
     async function updateTask(id, taskData) {
-        try {
-            const updatedTask = await taskService.updateTask(id, taskData);
-            setTasks((prev) => prev.map(t => t.id === id ? updatedTask : t));
-        } catch (err) {
-            console.error(err);
-            throw err;
+        // O estado visual atualiza primeiro em ambos os casos
+        setTasks((prev) => prev.map(t => t.id === id ? { ...t, ...taskData } : t));
+
+        if (user) {
+            try {
+                await taskService.updateTask(id, taskData);
+            } catch (err) {
+                console.error(err);
+                throw err;
+            }
         }
     }
 
@@ -50,11 +70,14 @@ export function useTasks() {
             t.id === id ? { ...t, completed: isCompleted } : t
         ));
 
-        try {
-            await taskService.toggleTask(id, isCompleted);
-        } catch (err) {
-            console.error("Erro ao atualizar status", err);
-            fetchTasks();
+        // Só chama serviço se logado
+        if (user) {
+            try {
+                await taskService.toggleTask(id, isCompleted);
+            } catch (err) {
+                console.error("Erro ao atualizar status", err);
+                fetchTasks(); // Reverte se der erro
+            }
         }
     }
 
@@ -62,11 +85,14 @@ export function useTasks() {
         const previousTasks = [...tasks];
         setTasks((prev) => prev.filter(t => t.id !== id));
 
-        try {
-            await taskService.deleteTask(id);
-        } catch (err) {
-            console.error("Erro ao deletar", err);
-            setTasks(previousTasks);
+        // Só chama serviço se logado
+        if (user) {
+            try {
+                await taskService.deleteTask(id);
+            } catch (err) {
+                console.error("Erro ao deletar", err);
+                setTasks(previousTasks);
+            }
         }
     }
 
